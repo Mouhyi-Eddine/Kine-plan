@@ -36,8 +36,12 @@ public class TenantAwareDataSource extends AbstractDataSource {
     }
 
     @Override
-    public PrintWriter getLogWriter() throws SQLException {
-        return delegate.getLogWriter();
+    public PrintWriter getLogWriter() {
+        try {
+            return delegate.getLogWriter();
+        } catch (SQLException exception) {
+            throw new IllegalStateException("Unable to get log writer", exception);
+        }
     }
 
     @Override
