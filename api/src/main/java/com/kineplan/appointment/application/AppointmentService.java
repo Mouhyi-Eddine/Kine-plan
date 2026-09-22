@@ -102,7 +102,7 @@ public class AppointmentService {
 
     private Appointment find(UUID cabinetId, UUID appointmentId) {
         return appointmentRepository.findByIdAndCabinetId(appointmentId, cabinetId)
-                .orElseThrow(() -> new AppointmentException("Appointment not found"));
+                .orElseThrow(AppointmentNotFoundException::new);
     }
 
     private AppointmentResponse toResponse(Appointment appointment) {

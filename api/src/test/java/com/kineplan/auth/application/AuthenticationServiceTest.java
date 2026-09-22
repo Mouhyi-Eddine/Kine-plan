@@ -80,4 +80,21 @@ class AuthenticationServiceTest {
         assertThatThrownBy(() -> service.selectCabinet(userId, cabinetId))
                 .isInstanceOf(AuthenticationException.class);
     }
+
+    @Test
+    void loginDoesNotExposeSuspendedCabinet() {
+        User user = new User(userId, "user@example.com", new BCryptPasswordEncoder().encode("secret"), "Ada", "Lovelace");
+        Membership membership = new Membership(membershipId, userId, cabinetId, MembershipRole.ADMIN,
+                MembershipStatus.ACTIVE, Instant.now());
+        Cabinet cabinet = mock(Cabinet.class);
+        when(cabinet.isActive()).thenReturn(false);
+        when(userRepository.findByEmailIgnoreCase("user@example.com")).thenReturn(Optional.of(user));
+        when(membershipRepository.findByUserIdAndStatus(userId, MembershipStatus.ACTIVE)).thenReturn(List.of(membership));
+        when(cabinetRepository.findById(cabinetId)).thenReturn(Optional.of(cabinet));
+
+        var response = service.login("user@example.com", "secret");
+
+        assertThat(response.preAuthToken()).isNotBlank();
+        assertThat(response.cabinets()).isEmpty();
+    }
 }

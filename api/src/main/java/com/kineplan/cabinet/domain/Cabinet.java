@@ -37,10 +37,33 @@ public class Cabinet {
     protected Cabinet() {
     }
 
+    public Cabinet(UUID id, String name, String address, String siret, String timezone,
+                   CabinetStatus status, String subscriptionPlan, Instant createdAt) {
+        this.id = id;
+        this.name = name;
+        this.address = address;
+        this.siret = siret;
+        this.timezone = timezone;
+        this.status = status;
+        this.subscriptionPlan = subscriptionPlan;
+        this.createdAt = createdAt;
+    }
+
     public UUID getId() { return id; }
     public String getName() { return name; }
+    public String getAddress() { return address; }
+    public String getSiret() { return siret; }
     public String getTimezone() { return timezone; }
     public CabinetStatus getStatus() { return status; }
+    public String getSubscriptionPlan() { return subscriptionPlan; }
+    public Instant getCreatedAt() { return createdAt; }
+
+    public void updateProfile(String name, String address, String siret, String timezone) {
+        this.name = name;
+        this.address = address;
+        this.siret = siret;
+        this.timezone = timezone;
+    }
 
     public boolean isActive() {
         return status == CabinetStatus.ACTIF;

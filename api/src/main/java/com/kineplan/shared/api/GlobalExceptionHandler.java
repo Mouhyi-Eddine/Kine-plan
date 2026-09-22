@@ -4,6 +4,10 @@ import com.kineplan.shared.infrastructure.tenancy.TenantNotSetException;
 import com.kineplan.auth.application.MembershipException;
 import com.kineplan.patient.application.PatientNotFoundException;
 import com.kineplan.appointment.application.AppointmentException;
+import com.kineplan.appointment.application.AppointmentNotFoundException;
+import com.kineplan.cabinet.application.CabinetException;
+import com.kineplan.cabinet.application.CabinetAccessDeniedException;
+import com.kineplan.cabinet.application.CabinetNotFoundException;
 import jakarta.validation.ConstraintViolationException;
 import java.net.URI;
 import java.time.Instant;
@@ -53,6 +57,26 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(AppointmentException.class)
     ProblemDetail handleAppointment(AppointmentException exception) {
         return problem(HttpStatus.CONFLICT, "Appointment operation rejected", exception.getMessage(), "appointment-operation-rejected");
+    }
+
+    @ExceptionHandler(AppointmentNotFoundException.class)
+    ProblemDetail handleAppointmentNotFound(AppointmentNotFoundException exception) {
+        return problem(HttpStatus.NOT_FOUND, "Appointment not found", "Appointment not found", "appointment-not-found");
+    }
+
+    @ExceptionHandler(CabinetException.class)
+    ProblemDetail handleCabinet(CabinetException exception) {
+        return problem(HttpStatus.CONFLICT, "Cabinet operation rejected", exception.getMessage(), "cabinet-operation-rejected");
+    }
+
+    @ExceptionHandler(CabinetAccessDeniedException.class)
+    ProblemDetail handleCabinetAccessDenied(CabinetAccessDeniedException exception) {
+        return problem(HttpStatus.FORBIDDEN, "Cabinet access denied", "Cabinet access denied", "cabinet-access-denied");
+    }
+
+    @ExceptionHandler(CabinetNotFoundException.class)
+    ProblemDetail handleCabinetNotFound(CabinetNotFoundException exception) {
+        return problem(HttpStatus.NOT_FOUND, "Cabinet not found", "Cabinet not found", "cabinet-not-found");
     }
 
     @ExceptionHandler(Exception.class)

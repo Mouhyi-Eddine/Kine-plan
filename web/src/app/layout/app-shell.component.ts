@@ -29,6 +29,7 @@ import { AuthService } from '../core/auth/auth.service';
     <div class="app-frame">
       <nav class="side-nav" aria-label="Navigation principale">
         <a routerLink="/dashboard" routerLinkActive="active"><mat-icon aria-hidden="true">dashboard</mat-icon>Tableau de bord</a>
+        <a routerLink="/cabinet" routerLinkActive="active"><mat-icon aria-hidden="true">business</mat-icon>Cabinet</a>
         <a routerLink="/patients" routerLinkActive="active"><mat-icon aria-hidden="true">people</mat-icon>Patients</a>
         <a routerLink="/planning" routerLinkActive="active"><mat-icon aria-hidden="true">calendar_month</mat-icon>Planning</a>
         <a routerLink="/liste-attente" routerLinkActive="active"><mat-icon aria-hidden="true">hourglass_top</mat-icon>Liste d’attente</a>

@@ -26,6 +26,11 @@ kineplan:
       access-token-ttl: PT10M
       pre-auth-token-ttl: PT2M
       refresh-token-ttl: P30D
+  subscription-plans:
+    plans:
+      ESSENTIAL:
+        max-practitioners: ${KINEPLAN_ESSENTIAL_MAX_PRACTITIONERS:3}
+        max-sms-per-month: ${KINEPLAN_ESSENTIAL_MAX_SMS_PER_MONTH:500}
 
 ---
 spring:

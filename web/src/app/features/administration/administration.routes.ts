@@ -1,4 +1,4 @@
 import { Routes } from '@angular/router';
-import { FeaturePlaceholderComponent } from '../../shared/feature-placeholder.component';
+import { AdministrationComponent } from './administration.component';
 
-export const ADMINISTRATION_ROUTES: Routes = [{ path: '', component: FeaturePlaceholderComponent, data: { title: 'Administration' } }];
+export const ADMINISTRATION_ROUTES: Routes = [{ path: '', component: AdministrationComponent, data: { title: 'Administration' } }];

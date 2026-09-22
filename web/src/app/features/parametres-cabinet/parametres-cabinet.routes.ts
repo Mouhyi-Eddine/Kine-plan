@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
-import { FeaturePlaceholderComponent } from '../../shared/feature-placeholder.component';
+import { roleGuard } from '../../core/auth/auth.guards';
+import { CabinetSettingsComponent } from './cabinet-settings.component';
 
-export const PARAMETRES_CABINET_ROUTES: Routes = [{ path: '', component: FeaturePlaceholderComponent, data: { title: 'Paramètres du cabinet' } }];
+export const PARAMETRES_CABINET_ROUTES: Routes = [{ path: '', component: CabinetSettingsComponent, canActivate: [roleGuard(['ADMIN'])], data: { title: 'Paramètres du cabinet' } }];

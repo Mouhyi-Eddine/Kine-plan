@@ -1,4 +1,4 @@
 import { Routes } from '@angular/router';
-import { FeaturePlaceholderComponent } from '../../shared/feature-placeholder.component';
+import { PractitionersComponent } from './practitioners.component';
 
-export const PRATICIENS_ROUTES: Routes = [{ path: '', component: FeaturePlaceholderComponent, data: { title: 'Praticiens' } }];
+export const PRATICIENS_ROUTES: Routes = [{ path: '', component: PractitionersComponent, data: { title: 'Praticiens' } }];

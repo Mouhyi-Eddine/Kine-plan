@@ -1,4 +1,4 @@
 import { Routes } from '@angular/router';
-import { FeaturePlaceholderComponent } from '../../shared/feature-placeholder.component';
+import { PatientRecordComponent } from './patient-record.component';
 
-export const DOSSIER_PATIENT_ROUTES: Routes = [{ path: '', component: FeaturePlaceholderComponent, data: { title: 'Dossier patient' } }];
+export const DOSSIER_PATIENT_ROUTES: Routes = [{ path: ':patientId', component: PatientRecordComponent, data: { title: 'Dossier patient' } }];

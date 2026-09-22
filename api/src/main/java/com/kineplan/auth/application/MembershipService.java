@@ -12,6 +12,7 @@ import com.kineplan.auth.domain.MembershipStatus;
 import com.kineplan.auth.domain.User;
 import com.kineplan.auth.domain.UserRepository;
 import com.kineplan.auth.domain.UserStatus;
+import com.kineplan.cabinet.application.CabinetQuotaService;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.SecureRandom;
@@ -32,16 +33,19 @@ public class MembershipService {
     private final MembershipInvitationRepository invitationRepository;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final CabinetQuotaService quotaService;
     private final SecureRandom secureRandom = new SecureRandom();
     private final Clock clock = Clock.systemUTC();
 
     public MembershipService(MembershipRepository membershipRepository,
                               MembershipInvitationRepository invitationRepository,
-                              UserRepository userRepository, PasswordEncoder passwordEncoder) {
+                              UserRepository userRepository, PasswordEncoder passwordEncoder,
+                              CabinetQuotaService quotaService) {
         this.membershipRepository = membershipRepository;
         this.invitationRepository = invitationRepository;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.quotaService = quotaService;
     }
 
     @Transactional(readOnly = true)
@@ -81,6 +85,9 @@ public class MembershipService {
                     throw new MembershipException("Membership already exists");
                 });
         Instant now = clock.instant();
+        if (invitation.getRole() == MembershipRole.KINESITHERAPEUTE) {
+            quotaService.ensurePractitionerAvailable(invitation.getCabinetId());
+        }
         membershipRepository.save(new Membership(UUID.randomUUID(), user.getId(), invitation.getCabinetId(),
                 invitation.getRole(), MembershipStatus.ACTIVE, now));
         invitation.accept(now);

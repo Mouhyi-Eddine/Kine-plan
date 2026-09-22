@@ -16,6 +16,7 @@ export const routes: Routes = [
 		component: AppShellComponent,
 		canActivate: [authenticatedGuard, cabinetGuard],
 		children: [
+			{ path: 'cabinet', loadComponent: () => import('./features/cabinet/cabinet-profile.component').then((module) => module.CabinetProfileComponent) },
 			{ path: 'dashboard', loadChildren: () => import('./features/dashboard/dashboard.routes').then((module) => module.DASHBOARD_ROUTES) },
 			{ path: 'patients', loadChildren: () => import('./features/patients/patients.routes').then((module) => module.PATIENTS_ROUTES) },
 			{ path: 'dossier-patient', loadChildren: () => import('./features/dossier-patient/dossier-patient.routes').then((module) => module.DOSSIER_PATIENT_ROUTES) },

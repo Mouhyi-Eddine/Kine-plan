@@ -39,7 +39,7 @@ public class SecurityConfig {
                     .frameOptions(org.springframework.security.config.annotation.web.configurers.HeadersConfigurer.FrameOptionsConfig::deny)
                     .httpStrictTransportSecurity(hsts -> hsts.includeSubDomains(true).preload(true).maxAgeInSeconds(31536000)))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/actuator/health", "/api/v1/auth/**", "/v3/api-docs/**",
+                        .requestMatchers("/actuator/health", "/api/v1/auth/**", "/api/v1/onboarding", "/v3/api-docs/**",
                             "/swagger-ui.html", "/swagger-ui/**").permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)

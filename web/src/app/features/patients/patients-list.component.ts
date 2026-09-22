@@ -5,12 +5,13 @@ import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
+import { RouterLink } from '@angular/router';
 import { PatientsApi } from './patients.api';
 import { PageResponse, PatientResponse } from './patients.models';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MatButtonModule, MatCardModule, MatFormFieldModule, MatIconModule, MatInputModule, ReactiveFormsModule],
+  imports: [MatButtonModule, MatCardModule, MatFormFieldModule, MatIconModule, MatInputModule, ReactiveFormsModule, RouterLink],
   selector: 'app-patients-list',
   template: `
     <section class="patients-page" aria-labelledby="patients-title">
@@ -19,7 +20,7 @@ import { PageResponse, PatientResponse } from './patients.models';
       @if (loading()) { <div class="state" role="status"><mat-icon aria-hidden="true">progress_activity</mat-icon>Chargement des dossiers...</div> }
       @if (errorMessage()) { <div class="state error" role="alert"><mat-icon aria-hidden="true">cloud_off</mat-icon>{{ errorMessage() }}</div> }
       @if (!loading() && !errorMessage() && patients().content.length === 0) { <mat-card appearance="outlined" class="empty"><mat-icon aria-hidden="true">folder_open</mat-icon><h2>Aucun patient trouvé</h2><p>Modifiez votre recherche ou créez un nouveau dossier.</p></mat-card> }
-      @if (!loading() && !errorMessage() && patients().content.length > 0) { <div class="patient-list" role="list">@for (patient of patients().content; track patient.id) { <mat-card appearance="outlined" role="listitem" class="patient-card"><div class="avatar" aria-hidden="true">{{ initials(patient) }}</div><div class="identity"><h2>{{ patient.lastName }} {{ patient.firstName }}</h2><p>{{ patient.phone || patient.email || 'Coordonnées non renseignées' }}</p></div><span class="record-status">{{ patient.archivedAt ? 'Archivé' : 'Actif' }}</span><button mat-icon-button type="button" [attr.aria-label]="'Ouvrir le dossier de ' + patient.firstName + ' ' + patient.lastName"><mat-icon aria-hidden="true">arrow_forward</mat-icon></button></mat-card> }</div><nav class="pagination" aria-label="Pagination patients"><button mat-icon-button type="button" aria-label="Page précédente" [disabled]="patients().number === 0" (click)="load(patients().number - 1)"><mat-icon aria-hidden="true">chevron_left</mat-icon></button><span>Page {{ patients().number + 1 }} sur {{ patients().totalPages }}</span><button mat-icon-button type="button" aria-label="Page suivante" [disabled]="patients().number + 1 >= patients().totalPages" (click)="load(patients().number + 1)"><mat-icon aria-hidden="true">chevron_right</mat-icon></button></nav> }
+      @if (!loading() && !errorMessage() && patients().content.length > 0) { <div class="patient-list" role="list">@for (patient of patients().content; track patient.id) { <mat-card appearance="outlined" role="listitem" class="patient-card"><div class="avatar" aria-hidden="true">{{ initials(patient) }}</div><div class="identity"><h2>{{ patient.lastName }} {{ patient.firstName }}</h2><p>{{ patient.phone || patient.email || 'Coordonnées non renseignées' }}</p></div><span class="record-status">{{ patient.archivedAt ? 'Archivé' : 'Actif' }}</span><a mat-icon-button [routerLink]="['/dossier-patient', patient.id]" [attr.aria-label]="'Ouvrir le dossier de ' + patient.firstName + ' ' + patient.lastName"><mat-icon aria-hidden="true">arrow_forward</mat-icon></a></mat-card> }</div><nav class="pagination" aria-label="Pagination patients"><button mat-icon-button type="button" aria-label="Page précédente" [disabled]="patients().number === 0" (click)="load(patients().number - 1)"><mat-icon aria-hidden="true">chevron_left</mat-icon></button><span>Page {{ patients().number + 1 }} sur {{ patients().totalPages }}</span><button mat-icon-button type="button" aria-label="Page suivante" [disabled]="patients().number + 1 >= patients().totalPages" (click)="load(patients().number + 1)"></button></nav> }
     </section>
   `,
   styles: `

@@ -1,0 +1,6 @@
+DROP POLICY IF EXISTS cabinets_tenant_isolation ON cabinets;
+DROP POLICY IF EXISTS memberships_tenant_isolation ON memberships;
+ALTER TABLE cabinets NO FORCE ROW LEVEL SECURITY;
+ALTER TABLE cabinets DISABLE ROW LEVEL SECURITY;
+ALTER TABLE memberships NO FORCE ROW LEVEL SECURITY;
+ALTER TABLE memberships DISABLE ROW LEVEL SECURITY;

@@ -7,6 +7,7 @@ import java.sql.DriverManager;
 import java.util.UUID;
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -14,6 +15,8 @@ import org.testcontainers.containers.PostgreSQLContainer;
 
 @Testcontainers
 class TenantRlsIntegrationTest {
+    private static final String RLS_USERNAME = "kineplan_rls";
+    private static final String RLS_PASSWORD = "kineplan_rls";
     @Container
     static final PostgreSQLContainer<?> POSTGRES = new PostgreSQLContainer<>("postgres:16-alpine")
             .withDatabaseName("kineplan")
@@ -21,11 +24,25 @@ class TenantRlsIntegrationTest {
             .withPassword("kineplan");
 
     @BeforeAll
-    static void migrate() {
+    static void migrate() throws Exception {
         Flyway.configure()
                 .dataSource(POSTGRES.getJdbcUrl(), POSTGRES.getUsername(), POSTGRES.getPassword())
                 .load()
                 .migrate();
+        try (Connection connection = connectionAsOwner(); var statement = connection.createStatement()) {
+            statement.execute("drop role if exists " + RLS_USERNAME);
+            statement.execute("create role " + RLS_USERNAME + " login password '" + RLS_PASSWORD + "' nosuperuser");
+            statement.execute("grant usage on schema public to " + RLS_USERNAME);
+            statement.execute("grant all privileges on all tables in schema public to " + RLS_USERNAME);
+            statement.execute("grant all privileges on all sequences in schema public to " + RLS_USERNAME);
+        }
+    }
+
+    @BeforeEach
+    void cleanDatabase() throws Exception {
+        try (Connection connection = connectionAsOwner(); var statement = connection.createStatement()) {
+            statement.execute("truncate table users, cabinets cascade");
+        }
     }
 
     @Test
@@ -34,7 +51,7 @@ class TenantRlsIntegrationTest {
         UUID cabinetB = UUID.randomUUID();
         UUID patientA = UUID.randomUUID();
 
-        try (Connection connection = connection()) {
+        try (Connection connection = connectionAsRlsUser()) {
             setTenant(connection, cabinetA);
             insertCabinet(connection, cabinetA);
             insertPatient(connection, patientA, cabinetA);
@@ -45,7 +62,7 @@ class TenantRlsIntegrationTest {
             assertThat(insertPatient(connection, UUID.randomUUID(), cabinetA)).isFalse();
         }
 
-        try (Connection connection = connection()) {
+        try (Connection connection = connectionAsRlsUser()) {
             setTenant(connection, cabinetA);
             assertThat(countPatients(connection)).isEqualTo(1);
         }
@@ -57,7 +74,7 @@ class TenantRlsIntegrationTest {
         UUID cabinetB = UUID.randomUUID();
         UUID userId = UUID.randomUUID();
 
-        try (Connection connection = connection()) {
+        try (Connection connection = connectionAsRlsUser()) {
             setTenant(connection, cabinetA);
             insertCabinet(connection, cabinetA);
             insertCabinet(connection, cabinetB);
@@ -71,8 +88,12 @@ class TenantRlsIntegrationTest {
         }
     }
 
-    private Connection connection() throws Exception {
+    private static Connection connectionAsOwner() throws Exception {
         return DriverManager.getConnection(POSTGRES.getJdbcUrl(), POSTGRES.getUsername(), POSTGRES.getPassword());
+    }
+
+    private Connection connectionAsRlsUser() throws Exception {
+        return DriverManager.getConnection(POSTGRES.getJdbcUrl(), RLS_USERNAME, RLS_PASSWORD);
     }
 
     private void setTenant(Connection connection, UUID cabinetId) throws Exception {
