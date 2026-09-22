@@ -1,0 +1,50 @@
+spring:
+  application:
+    name: kine-plan-api
+  profiles:
+    default: dev
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate.jdbc.time_zone: UTC
+      hibernate.tenant_identifier_resolver: com.kineplan.shared.infrastructure.tenancy.HibernateTenantIdentifierResolver
+  flyway:
+    enabled: true
+  jackson.time-zone: UTC
+management:
+  endpoints.web.exposure.include: health,info,metrics
+  endpoint.health.probes.enabled: true
+server.error.include-message: never
+kineplan:
+  cors:
+    allowed-origin-patterns: ${CORS_ALLOWED_ORIGIN_PATTERNS:http://localhost:4200,https://*.app.github.dev}
+  security:
+    jwt:
+      secret: ${JWT_SECRET:dev-only-secret-change-me-please-1234567890}
+      access-token-ttl: PT10M
+      pre-auth-token-ttl: PT2M
+      refresh-token-ttl: P30D
+
+---
+spring:
+  config.activate.on-profile: dev
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/kineplan}
+    username: ${DB_USERNAME:kineplan}
+    password: ${DB_PASSWORD:kineplan}
+  hikaricp:
+    connection-init-sql: SELECT set_config('app.current_cabinet_id', '00000000-0000-0000-0000-000000000000', false)
+---
+spring:
+  config.activate.on-profile: test
+  flyway.enabled: false
+  jpa.hibernate.ddl-auto: create-drop
+---
+spring:
+  config.activate.on-profile: prod
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}

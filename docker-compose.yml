@@ -16,7 +16,9 @@ services:
       retries: 10
 
   api:
-    build: .
+    build:
+      context: ./api
+      dockerfile: Dockerfile
     environment:
       SPRING_PROFILES_ACTIVE: dev
       DB_URL: jdbc:postgresql://postgres:5432/kineplan
